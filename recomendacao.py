@@ -1,24 +1,39 @@
 from math import sqrt
-import random
+import os
 
+
+#Diretório onde estão armazenados os dados do MovieLensv
+diretorio_atual = os.getcwd()
+
+# Função para calcular a similaridade entre dois usuários usando a distância Euclidiana
 def euclidiana(base, usuario1, usuario2):
+    # Dicionário para armazenar os itens avaliados por ambos usuários
     si = {}
     for item in base[usuario1]:
        if item in base[usuario2]: si[item] = 1
 
+    # Se não houver itens em comum, a similaridade é zero
     if len(si) == 0: return 0
 
+    # Calcula a soma das diferenças ao quadrado para cada item avaliado pelos dois usuários
     soma = sum([pow(base[usuario1][item] - base[usuario2][item], 2)
                 for item in base[usuario1] if item in base[usuario2]])
+    
+    # Retorna a similaridade entre os dois usuários
     return 1/(1 + sqrt(soma))
 
+# Função para obter uma lista de usuários similares a um dado usuário
 def getSimilares(base, usuario):
+    # Cria uma lista de tuplas (similaridade, usuário) para todos os usuários, exceto o usuário dado
     similaridade = [(euclidiana(base, usuario, outro), outro)
                     for outro in base if outro != usuario]
+    # Ordena a lista em ordem decrescente de similaridade
     similaridade.sort()
     similaridade.reverse()
+    # Retorna os 30 usuários mais similares
     return similaridade[0:30]
-    
+
+# Função para recomendar filmes para um dado usuário com base nos usuários mais similares
 def getRecomendacoesUsuario(base, usuario):
     totais={}
     somaSimilaridade={}
@@ -38,94 +53,25 @@ def getRecomendacoesUsuario(base, usuario):
     rankings.sort()
     rankings.reverse()
     return rankings[0:30]
-                
-def carregaMovieLens(path='D:\\Repositorios\\Projeto_recomendacao_filmes\\ml-100k'):
+
+# Função para carregar os dados do MovieLens          
+def carregaMovieLens(diretorio_atual):
     filmes = {}
-    for linha in open(path + '\\u.item'):
+    for linha in open(diretorio_atual + '\\ml-100k\\u.item'):
         (id, titulo) = linha.split('|')[0:2]
         filmes[id] = titulo
 
     base = {}
-    for linha in open(path + '\\u.data'):
+    for linha in open(diretorio_atual + '\\ml-100k\\u.data'):
         (usuario, idfilme, nota, tempo) = linha.split('\t')
         base.setdefault(usuario, {})
         base[usuario][filmes[idfilme]] = float(nota)
-    return base            
-
+    return base  
+          
+# Função calcula a similaridade entre cada par de filmes usando um método de similaridade do cosseno.
 def calculaItensSimilares(base):
     result = {}
     for item in base:
         notas = getSimilares(base, item)
         result[item] = notas
     return result
-
-def getRecomendacoesItens(baseUsuario, similaridadeItens, usuario):
-    notasUsuario = baseUsuario[usuario]
-    notas={}
-    totalSimilaridade={}
-    for (item, nota) in notasUsuario.items():
-        for (similaridade, item2) in similaridadeItens[item]:
-            if item2 in notasUsuario: continue
-            notas.setdefault(item2, 0)
-            notas[item2] += similaridade * nota
-            totalSimilaridade.setdefault(item2,0)
-            totalSimilaridade[item2] += similaridade
-    rankings=[(score/totalSimilaridade[item], item) for item, score in notas.items()]
-    rankings.sort()
-    rankings.reverse()
-    return rankings
-        
-# def criaBaseTeste(num_usuarios, num_itens, num_avaliacoes):
-#     base_teste = {}
-#     for i in range(num_usuarios):
-#         usuario = f"Usuario {i+1}"
-#         base_teste[usuario] = {}
-#         for j in range(num_avaliacoes):
-#             item = f"Item {j+1}"
-#             avaliacao = random.randint(1, 5)  # Avaliação aleatória de 1 a 5
-#             base_teste[usuario][item] = avaliacao
-#     return base_teste
-
-def criaBaseTeste(num_usuarios, num_itens, num_avaliacoes):
-    base_teste = {}
-    for i in range(num_usuarios):
-        usuario = f"Usuario {i+1}"
-        base_teste[usuario] = {}
-        for j in range(num_avaliacoes):
-            item = random_movies(j,j)
-            avaliacao = random.randint(1, 5)  # Avaliação aleatória de 1 a 5
-            base_teste[usuario][item] = avaliacao
-    return base_teste
-
-
-def random_movies(j):
-    filmes = {}
-    for linha in open(path='D:\\Repositorios\\Projeto_recomendacao_filmes\\ml-100k' + '\\u.item'):
-        (id, titulo) = linha.split('|')[0:2]
-        filmes[j] = titulo
-    return filmes   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
