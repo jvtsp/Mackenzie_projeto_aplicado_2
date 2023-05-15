@@ -16,12 +16,12 @@ Cálculo da similaridade entre itens com base nas avaliações dos usuários
 Os dados utilizados neste projeto foram obtidos a partir do Kaggle: https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata/download?datasetVersionNumber=2
 
 ## Tecnologias Utilizadas
-Python
-Pandas
-Numpy
-Matplotlib
-Seaborn
-Scikit-learn
+Python \
+Pandas \
+Numpy \
+Matplotlib \
+Seaborn \
+Scikit-learn \ 
 
 ## Como Executar
 Clone este repositório em sua máquina local.
