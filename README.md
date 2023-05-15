@@ -21,7 +21,7 @@ Pandas \
 Numpy \
 Matplotlib \
 Seaborn \
-Scikit-learn \ 
+Scikit-learn
 
 ## Como Executar
 Clone este repositório em sua máquina local.
